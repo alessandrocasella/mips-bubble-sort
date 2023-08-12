@@ -1,0 +1,107 @@
+.data
+.align 4
+Table: .space 24
+msg1: .asciiz "Insert integer value : "
+msg2: .asciiz " "
+msg3: .asciiz "\nTable values: "
+msg4: .asciiz "\nOrdered Table values: "
+.text
+.globl main
+main:
+li $t9,4
+addi $s0,$zero,5
+addi $t0,$zero,0
+in:
+li $v0,4
+la $a0,msg1
+syscall
+li $v0,5
+syscall
+add $t1,$t0,$zero
+sll $t1,$t0,2
+add $t3,$v0,$zero
+sw $t3,Table ( $t1 )
+addi $t0,$t0,1
+slt $t1,$s0,$t0
+beq $t1,$zero,in
+
+la $a2,Table
+addi $a3,$s0,1
+#richiama bubble_sort
+jal buble_sort
+fine:
+li $v0,4
+la $a0,msg4
+syscall
+la $t0,Table
+add $t1,$zero,$zero
+printtable:
+lw $a0,0($t0)
+li $v0,1
+syscall
+li $v0,4
+la $a0,msg2
+syscall
+addi $t0,$t0,4
+addi $t1,$t1,1
+slt $t2,$s0,$t1
+beq $t2,$zero,printtable
+
+li $v0,10
+syscall
+
+buble_sort:
+add $t0,$zero,$zero
+
+loop1:
+jal printmytable
+addi $t0,$t0,1
+
+bgt $t0,$a3,endloop1 #se t0 < a1
+
+add $t1,$a3,$zer
+loop2:
+
+bge $t0,$t1,loop1 #j < = i
+
+#slt $t3,$t1,$t0
+#bne $t3,$zero,loop1
+
+addi $t1,$t1,-1
+
+mul $t4,$t1,$t9 #t4+a0=table[j]
+addi $t3,$t4,-4 #t3+a0=table[j-1]
+add $t7,$t4,$a2 #t7=table[j]
+add $t8,$t3,$a2 #t8=table[j-1]
+lw $t5,0($t7)
+lw $t6,0($t8)
+
+bgt $t5,$t6,loop2
+
+#switch t5,t6
+sw $t5,0($t8)
+sw $t6,0($t7)
+j loop2
+
+endloop1:
+jr $ra
+
+printmytable
+li $v0,4
+la $a0,msg3
+syscall
+la $s2,Table
+#s0=5
+add $s3,$zero,$zero
+printtable2:
+lw $a0,0($s2)
+li $v0,1
+syscall
+li $v0,4
+la $a0,msg2
+syscall
+addi $s2,$s2,4
+addi $s3,$s3,1
+slt $s4,$s0,$s3
+beq $s4,$zero,printtable2
+jr $ra
